@@ -9,7 +9,7 @@ This utility was designed to be used with my custom [Pterodactyl](https://github
 
 - Supports SFTP and FTP.
 - Prompts before overwriting files.
-- Small binary size.
+- Small binary size (1.07 MB -> 435 KB after optimization).
 
 ## Usage
 ```
@@ -20,10 +20,10 @@ Usage: sftpandftp_importer [OPTIONS] --user <USER> --pass <PASS> --remoteServer 
 
 Options:
       --protocol <PROTOCOL>           Protocol to use: ftp or sftp [default: ftp]
-      --user <USER>                   
-      --pass <PASS>                   
-      --remoteServer <REMOTE_SERVER>  
-      --port <PORT>                   [default: 21]
+      --user <USER>                   Username for authentication
+      --pass <PASS>                   Password for authentication
+      --remoteServer <REMOTE_SERVER>  Remote server address
+      --port <PORT>                   Port to connect to [default: 21]
       --remoteFolder <REMOTE_FOLDER>  Remote folder to download from [default: /]
       --targetFolder <TARGET_FOLDER>  Local folder to download to [default: ./]
   -h, --help                          Print help
@@ -63,7 +63,7 @@ This is how it can be used with my custom Pterodactyl Panel modification.
 `startup.sh`:
 ```
 #!/bin/sh
-curl -L https://github.com/bunfloof/sftpandftp_importer/releases/download/Release/main -o sftpandftp_importer
+curl -L https://github.com/bunfloof/sftpandftp_importer/releases/download/v0.1.1/sftpandftp_importer -o sftpandftp_importer
 chmod +x sftpandftp_importer
 ./sftpandftp_importer --protocol=sftp --user=bf6fe251 --pass=coems --port=22 --remoteServer=ams1.furweb.com --remoteFolder=/ --targetFolder=./testingsftp
 rm sftpandftp_importer

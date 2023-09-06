@@ -19,30 +19,28 @@ static mut SKIP_ALL: bool = false;
 #[clap(
     name = "SFTPAndFTPImporter",
     author = "Bun",
-    version = "0.1.0",
+    version = "0.1.1",
     about = "SFTP and FTP Importer"
 )]
 struct Args {
     /// Protocol to use: ftp or sftp
     #[clap(long, default_value = "ftp")]
     protocol: String,
-
+    /// Username for authentication
     #[clap(long)]
     user: String,
-
+    /// Password for authentication
     #[clap(long)]
     pass: String,
-
+    /// Remote server address
     #[clap(long = "remoteServer")]
     remote_server: String,
-
+    /// Port to connect to
     #[clap(long, default_value = "21")]
     port: u16,
-
     /// Remote folder to download from
     #[clap(long = "remoteFolder", default_value = "/")]
     remote_folder: String,
-
     /// Local folder to download to
     #[clap(long = "targetFolder", default_value = "./")]
     target_folder: String,
@@ -74,7 +72,7 @@ fn main() {
         _ => println!("Unsupported protocol"),
     }
 
-    println!("The program has completed running. Type 'stop' or 'exit' to close the program.");
+    println!("\x1B[1;32mThe program (sftpandftp_importer) has completed running. Type 'stop' or 'exit' to close the program.\x1B[0m");
     loop {
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
@@ -171,7 +169,10 @@ fn download_folder_ftp(ftp_stream: &mut FtpStream, remote_folder: &str, target_f
 
 fn download_file_ftp(ftp_stream: &mut FtpStream, remote_file: &str, target_file: &str) {
     if Path::new(target_file).exists() && unsafe { !OVERWRITE_ALL && !SKIP_ALL } {
-        println!("Overwrite {}? [y]es, [n]o, [A]ll, [N]one: ", target_file);
+        println!(
+            "\x1B[1;33mOverwrite {}? [y]es, [n]o, [A]ll, [N]one:\x1B[0m ",
+            target_file
+        );
         let mut choice = String::new();
         io::stdin().read_line(&mut choice).unwrap();
         match choice.trim() {
@@ -231,8 +232,8 @@ fn download_folder_sftp(sftp: &mut ssh2::Sftp, remote_folder: &str, target_folde
 
     for (path, stat) in entries {
         let file_name = path.file_name().unwrap().to_str().unwrap();
-        let local_target = format!("{}/{}", target_folder, file_name);
-        let remote_target = format!("{}/{}", remote_folder, file_name);
+        let local_target = Path::new(target_folder).join(file_name).to_string_lossy().into_owned();
+        let remote_target = Path::new(remote_folder).join(file_name).to_string_lossy().into_owned();
 
         if stat.is_dir() {
             fs::create_dir_all(&local_target).unwrap();
